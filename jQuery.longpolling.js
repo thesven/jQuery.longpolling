@@ -8,7 +8,7 @@
       
       longpolling: function(){
         
-        var pollURL = settings.pollURL + settings.timestamp;
+        var pollURL = settings.pollURL + '?' + settings.timestampURLVar + '=' + settings.timestamp;
         
         $.ajax({
           type: 'GET',
@@ -16,12 +16,14 @@
           async: true,
           cache: false,
           success: function(data, textStatus, jqXHR){
+            var json = eval('(' + data + ')');
+            settings.timestamp = json['timestamp'];
             if(settings.successFunction != null) settings.successFunction(data, textStatus, jqXHR);
-            setTimeout('Poll.longpolling()', settings.pollTime);
+            setTimeout(Poll.longpolling(), settings.pollTime);
           },
           error: function(jqXHR, textStatus, errorThrown){
             if(settings.errorFunction != null) settings.errorFunction(jqXHR, textStatus, errorThrown);
-            setTimeout('Poll.longpolling()', settings.pollErrorTime);
+            setTimeout(Poll.longpolling(), settings.pollErrorTime);
           }
         });
         
@@ -39,7 +41,8 @@
     pollErrorTime: 15000,
     successFunction: null,
     errorFunction: null,
-    timestamp: null
+    timestamp: null,
+    timestampURLVar: 'timestamp'
   }
   
 })(jQuery);
