@@ -16,7 +16,16 @@
           async: true,
           cache: false,
           success: function(data, textStatus, jqXHR){
+
+            try {
+                json = $.parseJSON(data);
+            } catch (e) {
+                setTimeout(Poll.longpolling(), settings.pollErrorTime);
+                return false;
+            }
+
             var json = eval('(' + data + ')');
+
             settings.timestamp = json['timestamp'];
             if(settings.successFunction != null) settings.successFunction(data, textStatus, jqXHR);
             setTimeout(Poll.longpolling(), settings.pollTime);
@@ -38,7 +47,7 @@
   $.longpolling.defaults = {
     pollURL: '',
     pollTime: 1000,
-    pollErrorTime: 15000,
+    pollErrorTime: 5000,
     successFunction: null,
     errorFunction: null,
     timestamp: null,
